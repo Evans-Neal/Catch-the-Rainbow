@@ -1,0 +1,31 @@
+{
+	"values": [
+		"minecraft:turtle",
+		"minecraft:axolotl",
+		"minecraft:drowned",
+		{
+			"id": "alexsmobs:platypus",
+			"required": false
+		},
+		{
+			"id": "alexsmobs:crocodile",
+			"required": false
+		},
+		{
+			"id": "alexsmobs:mantis_shrimp",
+			"required": false
+		},
+		{
+			"id": "alexsmobs:orca",
+			"required": false
+		},
+		{
+			"id": "alexsmobs:seal",
+			"required": false
+		},
+		{
+			"id": "alexsmobs:terrapin",
+			"required": false
+		}
+	]
+}

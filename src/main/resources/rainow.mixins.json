@@ -1,0 +1,28 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "dev.rainow.rainow.mixin",
+	"mixins": [
+		"EntityMixin",
+		"RainSwimAssistMixin",
+		"ServerLevelMixin",
+		"AbstractFishMixin",
+		"DrownedMixin",
+		"DolphinMixin",
+		"TurtleMixin",
+		"MobAccessor",
+		"PathNavigationAccessor",
+		"NodeEvaluatorAccessor",
+		"SwimNodeEvaluatorMixin",
+		"AmphibiousNodeEvaluatorMixin",
+		"WaterBoundPathNavigationMixin",
+		"MoveControlAccessor",
+		"TurtleMoveControlMixin",
+		"FishSwimGoalAccessor",
+		"FishSwimGoalSuppressMixin",
+		"KineticWeaponSilenceMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

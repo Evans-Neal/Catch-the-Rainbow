@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "rainow",
+	"version": "${version}",
+	"name": "Catch the Rainbow",
+	"description": "While it rains, water is in the air -- literally. Fish swim out of lakes and cruise through the rain, at most 10 blocks above the ground. When the rain stops, gravity remembers.",
+	"authors": [
+		"WorkBuddy"
+	],
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"dev.rainow.rainow.RainowMod"
+		]
+	},
+	"mixins": [
+		"rainow.mixins.json",
+		{
+			"config": "rainow.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.2",
+		"java": ">=25"
+	},
+	"icon": "assets/rainow/icon.png"
+}
