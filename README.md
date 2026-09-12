@@ -51,6 +51,12 @@ and the knight keeps coming on foot. Angrier.
 Server-side logic mod; installing it on the client is optional (adds a
 minor pose fix for mounted riders).
 
+## Dependencies
+
+None required. Optional: **Fabric API** enables the operator commands
+(`/rainow ...`) — without it the mod runs fine, only those commands are
+absent.
+
 ## Building
 
 Requires JDK 25 and Gradle 9.7.1+ (no wrapper is shipped):

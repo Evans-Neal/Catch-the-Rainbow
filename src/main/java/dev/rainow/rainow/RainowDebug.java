@@ -1,17 +1,18 @@
 package dev.rainow.rainow;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.phys.Vec3;
 
 public final class RainowDebug {
    private RainowDebug() {
@@ -33,26 +34,26 @@ public final class RainowDebug {
       );
    }
 
-   /** Positioned knight spawners: /rainow <name> <x> <y> <z> spawns exactly
-    * at the given block coords (replaces the old scatter "knight" command).
-    * 0.2.5 hotfix: these were accidentally registered at the dispatcher ROOT
-    * (/dolphin_knight) -- the /rainow parent literal got dropped in the
-    * 0.2.4.8 command rename. */
+   /** Knight spawners: /rainow <name> spawns at the caller's position
+    * (vanilla summon semantics), /rainow <name> <pos> spawns at pos --
+    * ~ relative coordinates included (Vec3Argument handles them natively).
+    * 0.2.6 (coordinate pass): the original integer x y z arguments were mandatory and rejected
+    * relative coords; this matches vanilla summon behavior instead.
+    * 0.2.6 hotfix note: the /rainow parent literal was accidentally dropped
+    * in the 0.2.4.8 rename (commands lived at the dispatcher root). */
    private static LiteralArgumentBuilder<CommandSourceStack> spawner(String name, Spawner spawner) {
       return Commands.literal(name).requires(Commands.hasPermission(Commands.LEVEL_MODERATORS))
-            .then(Commands.argument("x", IntegerArgumentType.integer())
-               .then(Commands.argument("y", IntegerArgumentType.integer())
-                  .then(Commands.argument("z", IntegerArgumentType.integer())
-                     .executes(ctx -> {
-                        CommandSourceStack source = ctx.getSource();
-                        ServerLevel level = source.getLevel();
-                        int x = IntegerArgumentType.getInteger(ctx, "x");
-                        int y = IntegerArgumentType.getInteger(ctx, "y");
-                        int z = IntegerArgumentType.getInteger(ctx, "z");
-                        spawner.spawn(level, new BlockPos(x, y, z), level.getRandom());
-                        source.sendSuccess(() -> Component.literal("[rainow] " + name + " spawned at " + x + " " + y + " " + z), true);
-                        return 1;
-                     }))));
+         .executes(ctx -> spawnAt(ctx, BlockPos.containing(ctx.getSource().getPosition()), name, spawner))
+         .then(Commands.argument("pos", Vec3Argument.vec3())
+            .executes(ctx -> spawnAt(ctx, BlockPos.containing(Vec3Argument.getVec3(ctx, "pos")), name, spawner)));
+   }
+
+   private static int spawnAt(CommandContext<CommandSourceStack> ctx, BlockPos pos, String name, Spawner spawner) {
+      CommandSourceStack source = ctx.getSource();
+      ServerLevel level = source.getLevel();
+      spawner.spawn(level, pos, level.getRandom());
+      source.sendSuccess(() -> Component.literal("[rainow] " + name + " spawned at " + pos.getX() + " " + pos.getY() + " " + pos.getZ()), true);
+      return 1;
    }
 
    @FunctionalInterface
