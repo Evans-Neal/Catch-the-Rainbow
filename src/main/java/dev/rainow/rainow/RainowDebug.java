@@ -26,15 +26,20 @@ public final class RainowDebug {
    }
 
    private static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
-      registerSpawner(dispatcher, "dolphin_knight", (level, pos, random) -> RainNightDrowned.spawnDolphinKnight(level, pos, random));
-      registerSpawner(dispatcher, "nautilus_knight", (level, pos, random) -> RainNightDrowned.spawnNautilusTridentKnight(level, pos, random));
+      dispatcher.register(
+         Commands.literal("rainow")
+            .then(spawner("dolphin_knight", (level, pos, random) -> RainNightDrowned.spawnDolphinKnight(level, pos, random)))
+            .then(spawner("nautilus_knight", (level, pos, random) -> RainNightDrowned.spawnNautilusTridentKnight(level, pos, random)))
+      );
    }
 
    /** Positioned knight spawners: /rainow <name> <x> <y> <z> spawns exactly
-    * at the given block coords (replaces the old scatter "knight" command). */
-   private static void registerSpawner(CommandDispatcher<CommandSourceStack> dispatcher, String name, Spawner spawner) {
-      dispatcher.register(
-         Commands.literal(name).requires(Commands.hasPermission(Commands.LEVEL_MODERATORS))
+    * at the given block coords (replaces the old scatter "knight" command).
+    * 0.2.5 hotfix: these were accidentally registered at the dispatcher ROOT
+    * (/dolphin_knight) -- the /rainow parent literal got dropped in the
+    * 0.2.4.8 command rename. */
+   private static LiteralArgumentBuilder<CommandSourceStack> spawner(String name, Spawner spawner) {
+      return Commands.literal(name).requires(Commands.hasPermission(Commands.LEVEL_MODERATORS))
             .then(Commands.argument("x", IntegerArgumentType.integer())
                .then(Commands.argument("y", IntegerArgumentType.integer())
                   .then(Commands.argument("z", IntegerArgumentType.integer())
@@ -47,8 +52,7 @@ public final class RainowDebug {
                         spawner.spawn(level, new BlockPos(x, y, z), level.getRandom());
                         source.sendSuccess(() -> Component.literal("[rainow] " + name + " spawned at " + x + " " + y + " " + z), true);
                         return 1;
-                     }))))
-      );
+                     }))));
    }
 
    @FunctionalInterface
